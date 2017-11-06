@@ -143,9 +143,10 @@ if __name__ == '__main__':
         
         
         hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
+        walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
         
-        qsub_args = " --job-name {name} --time {time} --qos {qos} --cpus-per-task {cpu} --mem-per-cpu{hard_mem_gb}".format(name=args.job_name, time=args.walltime, qos=args.qos, cpu=args.num_cores, hard_mem_gb=args.hard_mem_gb)        
-        
+        qsub_args = " --job-name {name} --time {time} --qos {qos} --cpus-per-task {cpu} --mem-per-cpu{hard_mem_gb}".format(name=args.job_name, time=walltime, qos=args.qos, cpu=args.num_cores, hard_mem_gb=hard_mem_gb)        
+         
         ######## maybe we should specify the working directory somehow, dunno if scicore needs it
                      
         if args.out_file is not None:
