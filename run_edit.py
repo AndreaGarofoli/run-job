@@ -139,15 +139,15 @@ if __name__ == '__main__':
                             remote_check_servers=None)  # checking filesize on remote servers not supported
         
         
-    elif cluster_engine == 'slurm':
-        
+    elif cluster_engine == 'slurm': 
         
         hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
         
         qsub_args = " --job-name {name} --time {time} --qos {qos} --cpus-per-task {cpu} --mem-per-cpu{hard_mem_gb}".format(name=args.job_name, time=walltime, qos=args.qos, cpu=args.num_cores, hard_mem_gb=hard_mem_gb)        
-         
+        
         ######## maybe we should specify the working directory somehow, dunno if scicore needs it
+        ####### gotta do the regex for the QoS, for not let's just not mess up
                      
         if args.out_file is not None:
             qsub_args += " --output {out}".format(out=args.out_file)  
@@ -163,11 +163,11 @@ if __name__ == '__main__':
             qsub_args += " --array {}".format(args.array)
                        
         ####### ARRAY  #SBATCH --array=1-6%3  (6 jobs, 3 parallel)
+        ####### gotta do the regex for this, for not let's just not mess up
 
         
         my_job = job.SLURMJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
-                            remote_check_servers=None)  # checking filesize on remote servers not supported
-        
+                            remote_check_servers=None)  # checking filesize on remote servers not supported        
         """        
         #qsub_args = "-V -wd {pwd} -now n -notify -b n -S {shell}".format(pwd=os.getcwd(), shell=args.shell)
         qsub_args = "--export=ALL --workdir={pwd}  -b n -S {shell}".format(pwd=os.getcwd(), shell=args.shell)
