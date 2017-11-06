@@ -167,6 +167,8 @@ if __name__ == '__main__':
         if args.mail-type is not None and args.mail-user is not None:
             qsub_args += " --mail-type {type} --mail-user {user}".format(type=args.mail-type, user=args.mail-user)       
         
+        ######### firly sure the mail-something thing will give some error, gotta see
+        
         if args.array is not None:
             qsub_args += " --array {}".format(args.array)
                        
