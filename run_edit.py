@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--local', default=False, action='store_true', help='run job locally')
     parser.add_argument('-o', '--out_file', default=None, help='output file to check')
     parser.add_argument('-p', '--project_name', default=None, help='project name')
-    parser.add_argument('-N', '--job_name', default=None, help='job name')
+    parser.add_argument('-N', '--job_name', default="myrun", help='job name')
     parser.add_argument('-e', '--log_file', default=None, help='log file')
     parser.add_argument('-S', '--shell', default='/bin/bash', help='shell')
     parser.add_argument('--servers', default=None, nargs='*',
@@ -140,23 +140,14 @@ if __name__ == '__main__':
         
         
     elif cluster_engine == 'slurm':
-        #qsub_args = "-cwd {pwd} -L {shell}".format(pwd=os.getcwd(), shell=args.shell)
         
-        ######### too many is not none, most of them have defaults
         
-        if job_name is not None:
-            qsub_args += " --job-name {}".format(job_name)
-        if args.num_cores > 1:
-            qsub_args += " --cpus-per-task {}".format(num_cores)
-        if hard_memory is not None:
-            hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
-            qsub_args += " --mem-per-cpu{hard_mem_gb}".format(hard_mem_gb=hard_mem_gb) ##soft memory?  
-
-            
-        if args.walltime is not None and args.qos is not None:
-            qsub_args += " --time {time} --qos {qos}".format(time=walltime, qos=qos)
-
-            
+        hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
+        
+        qsub_args = " --job-name {name} --time {time} --qos {qos} --cpus-per-task {cpu} --mem-per-cpu{hard_mem_gb}".format(name=args.job_name, time=args.walltime, qos=args.qos, cpu=args.num_cores, hard_mem_gb=args.hard_mem_gb)        
+        
+        ######## maybe we should specify the working directory somehow, dunno if scicore needs it
+                     
         if args.out_file is not None:
             qsub_args += " --output {out}".format(out=args.out_file)  
         if args.log_file is not None:
@@ -166,8 +157,6 @@ if __name__ == '__main__':
             
         if args.mail-type is not None and args.mail-user is not None:
             qsub_args += " --mail-type {type} --mail-user {user}".format(type=args.mail-type, user=args.mail-user)       
-        
-        ######### firly sure the mail-something thing will give some error, gotta see
         
         if args.array is not None:
             qsub_args += " --array {}".format(args.array)
@@ -212,7 +201,7 @@ if __name__ == '__main__':
                                     remote_check_servers=args.servers)
         # + node?
         
- """       
+        """       
         
     else:
         raise ValueError("invalid cluster engine. supported engines are sge, pbs, lsf and SLURM")
